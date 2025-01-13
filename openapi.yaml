@@ -1,0 +1,115 @@
+openapi: 3.0.3
+info:
+  title: Network Configuration API
+  description: API to manage network interfaces, DHCP configurations, and static host assignments.
+  version: 1.0.0
+servers:
+  - url: http://localhost:5000
+    description: Local development server
+paths:
+  /setup-interface/:
+    post:
+      summary: Configure a network interface
+      description: Appends network interface configuration to `/etc/network/interfaces` and updates related files.
+      security:
+        - BasicAuth: []
+      requestBody:
+        description: JSON object to configure the network interface
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - network
+                - netmask
+              properties:
+                name:
+                  type: string
+                  description: Name of the network interface (e.g., `enp2s4`).
+                  example: enp2s4
+                network:
+                  type: string
+                  description: Network address of the interface.
+                  example: 192.168.2.0
+                netmask:
+                  type: string
+                  description: Subnet mask of the network.
+                  example: 255.255.255.0
+      responses:
+        '200':
+          description: Interface configured successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Interface setup completed.
+        '401':
+          description: Unauthorized access
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Authentication required.
+  /host/:
+    post:
+      summary: Add a static DHCP host
+      description: Appends static host configuration to `/etc/dhcp/dhcpd.conf`.
+      security:
+        - BasicAuth: []
+      requestBody:
+        description: JSON object to add a static DHCP host
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - mac
+                - addr
+              properties:
+                name:
+                  type: string
+                  description: Hostname of the device.
+                  example: k3ssys
+                mac:
+                  type: string
+                  description: MAC address of the device.
+                  example: bc:24:11:5c:95:d2
+                addr:
+                  type: string
+                  description: IP address to assign to the device.
+                  example: 192.168.2.2
+      responses:
+        '200':
+          description: Host added successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: DHCP host k3ssys added successfully.
+        '401':
+          description: Unauthorized access
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Authentication required.
+securitySchemes:
+  BasicAuth:
+    type: http
+    scheme: basic
