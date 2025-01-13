@@ -38,8 +38,8 @@ def setup_interface():
     network = data['network']
     netmask = data['netmask']
     address = data.get('address', network[:-1] + "1")  # Default to .1 if not provided
-    dhcp_range_start = data.get('range_start', network[:-1] + "50")
-    dhcp_range_end = data.get('range_end', network[:-1] + "200")
+    dhcp_range_start = data.get('range_start', network[:-1] + "100")
+    dhcp_range_end = data.get('range_end', network[:-1] + "126")
     dns_servers = data.get('dns_servers', "8.8.8.8, 8.8.4.4")  # Default DNS servers
 
     try:
