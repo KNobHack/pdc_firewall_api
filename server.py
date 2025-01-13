@@ -65,7 +65,7 @@ def setup_interface():
                 break
 
         # Write the updated configuration back to the file
-        with open(config_file_path, 'w') as file:
+        with open(isc_config_path, 'w') as file:
             file.writelines(config)
 
         # Update /etc/network/interfaces
