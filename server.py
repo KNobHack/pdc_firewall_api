@@ -45,7 +45,7 @@ def setup_interface():
     try:
 
 		# Read the current configuration from the file
-        with open(config_file_path, 'r') as file:
+        with open(isc_config_path, 'r') as file:
             config = file.readlines()
 
         # Find the line with INTERFACESv4 and append the new name if not already present
