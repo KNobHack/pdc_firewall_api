@@ -9,6 +9,7 @@ app = Flask(__name__)
 # File paths for configurations
 network_interfaces_path = "/etc/network/interfaces"
 dhcp_config_path = "/etc/dhcp/dhcpd.conf"
+isc_config_path = "/etc/default/isc-dhcp-server"
 
 # Define your username and password
 USERNAME = "username_the" # change this
@@ -42,6 +43,31 @@ def setup_interface():
     dns_servers = data.get('dns_servers', "8.8.8.8, 8.8.4.4")  # Default DNS servers
 
     try:
+
+		# Read the current configuration from the file
+        with open(config_file_path, 'r') as file:
+            config = file.readlines()
+
+        # Find the line with INTERFACESv4 and append the new name if not already present
+        for i, line in enumerate(config):
+            if line.startswith("INTERFACESv4="):
+                # Extract the current interfaces
+                current_interfaces = line.strip().split('=')[1].strip('"')
+                current_interfaces_list = current_interfaces.split()
+
+                # Check if the interface is already in the list
+                if name in current_interfaces_list:
+                    return jsonify({"message": f"'{name}' is already in INTERFACESv4"}), 200
+
+                # Append the new interface
+                current_interfaces_list.append(name)
+                config[i] = f'INTERFACESv4="{" ".join(current_interfaces_list)}"\n'
+                break
+
+        # Write the updated configuration back to the file
+        with open(config_file_path, 'w') as file:
+            file.writelines(config)
+
         # Update /etc/network/interfaces
         with open(network_interfaces_path, 'a') as net_file:
             net_file.write(f"\nallow-hotplug {name}\n")
